@@ -10,6 +10,15 @@ namespace Artefact
             string[] options = { "Shop", "Player", "Exit" };
             int selectedIndex = Menu.Display(prompt, options);
 
+            switch(selectedIndex)
+            {
+                case 0:
+                    Shop.BrowseShop();
+                    break;
+                default:
+                    break;
+            }
+
         }
     }
 }
