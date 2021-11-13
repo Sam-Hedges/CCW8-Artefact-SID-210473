@@ -24,8 +24,8 @@ namespace Artefact
             new Item("Mustard", "", 4, 1),
             new Item("Ketchup", "", 4, 1)
         };
-        private static Inventory stock;
-        public static Inventory playerBasket;
+        private static Inventory stock = new Inventory();
+        public static Inventory playerBasket = new Inventory();
         private static bool stockInitialised = false;
 
         public static void BrowseShop()
@@ -37,9 +37,7 @@ namespace Artefact
 
             for (int i = 0; i < src; i++)
             {
-                options[i] = 
-                    @$"Name: {stock.record[i].name} Quantity: {stock.record[i].quantity} 
-Value: {stock.record[i].value}\nDescription: {stock.record[i].description}\n\n";
+                options[i] = $"Name: {stock.record[i].name} \nQuantity: {stock.record[i].quantity} \nValue: £{stock.record[i].value}\nDescription: {stock.record[i].description}\n ";
             }
 
             Menu.Display("Shop", options);

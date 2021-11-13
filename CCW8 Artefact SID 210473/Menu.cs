@@ -32,7 +32,7 @@ namespace Artefact
                     //BackgroundColor = ConsoleColor.Black;
                 }
 
-                Utils.WriteLineAdvanced($"{prefix[0]} << {currentOption} >> {prefix[1]}", true, false);
+                Utils.WriteLineAdvanced($"{currentOption}", true, false);
             }
             Console.ResetColor();
         }

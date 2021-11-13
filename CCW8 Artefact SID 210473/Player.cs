@@ -7,7 +7,7 @@ namespace Artefact
     public static class Player
     {
         public static float balance = 100f;
-        public static Inventory inventory;
+        public static Inventory inventory = new Inventory();
         
         public static string DisplayInventory()
         {

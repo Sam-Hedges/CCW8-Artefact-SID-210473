@@ -6,7 +6,6 @@ namespace Artefact
 {
     public class Inventory
     {
-
         public readonly List<Item> record = new List<Item>();
 
         public void AddItem(Item item, int quantityToAdd)

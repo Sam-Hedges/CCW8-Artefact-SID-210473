@@ -6,19 +6,24 @@ namespace Artefact
     {
         static void Main(string[] args)
         {
-            string prompt = "Hello World!";
-            string[] options = { "Shop", "Player", "Exit" };
-            int selectedIndex = Menu.Display(prompt, options);
-
-            switch(selectedIndex)
+            while (true)
             {
-                case 0:
-                    Shop.BrowseShop();
-                    break;
-                default:
-                    break;
-            }
+                string prompt = "Hello World!";
+                string[] options = { "Shop", "Player", "Exit" };
+                int selectedIndex = Menu.Display(prompt, options);
 
+                switch (selectedIndex)
+                {
+                    case 0:
+                        Shop.BrowseShop();
+                        break;
+                    case 1:
+                        break;
+                    case 2:
+                        Environment.Exit(0);
+                        break;
+                }
+            }
         }
     }
 }
