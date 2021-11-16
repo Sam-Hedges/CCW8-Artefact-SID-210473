@@ -8,7 +8,7 @@ namespace Artefact
         private static string[] Options;
         private static string Prompt;
 
-        private static void DisplayOptions()
+        private static void DisplayOptions(bool centerOptions)
         {
             Utils.WriteLineAdvanced(Prompt, true, false);
 
@@ -32,11 +32,11 @@ namespace Artefact
                     //BackgroundColor = ConsoleColor.Black;
                 }
 
-                Utils.WriteLineAdvanced($"{currentOption}", true, false);
+                Utils.WriteLineAdvanced($"{currentOption}", centerOptions, false);
             }
             Console.ResetColor();
         }
-        public static int Display(string prompt, string[] options)
+        public static int Display(string prompt, string[] options, bool centerOptions = true)
         {
             Prompt = prompt;
             Options = options;
@@ -46,7 +46,7 @@ namespace Artefact
             do
             {
                 Console.Clear();
-                DisplayOptions();
+                DisplayOptions(centerOptions);
 
                 ConsoleKeyInfo keyInfo = Console.ReadKey(true);
                 keyPressed = keyInfo.Key;

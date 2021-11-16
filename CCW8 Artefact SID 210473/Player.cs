@@ -15,7 +15,7 @@ namespace Artefact
 
             foreach(Item item in inventory.record)
             {
-                tempStr += $"Name: {item.name} Quantity: {item.quantity} Value: {item.value}\nDescription: {item.description}\n\n";
+                tempStr += $"{item.Name} \n£{item.Value} x {item.Quantity}\n{item.Description}\n\n";
             }
             
             return tempStr;

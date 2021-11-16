@@ -8,22 +8,22 @@ namespace Artefact
     {
         public Item(string name, string description, float value, int maxStackQuantity)
         {
-            this.name = name;
-            this.description = description;
-            this.value = value;
-            this.quantity = 1;
-            this.maxStackQuantity = maxStackQuantity;
+            Name = name;
+            Description = description;
+            Value = value;
+            Quantity = 1;
+            MaxStackQuantity = maxStackQuantity;
         }
 
-        public string name { get; private set; }
-        public string description { get; private set; }
-        public float value { get; set; }
-        public int quantity { get; set; }
-        public int maxStackQuantity { get; private set; }
+        public string Name { get; private set; }
+        public string Description { get; private set; }
+        public float Value { get; set; }
+        public int Quantity { get; set; }
+        public int MaxStackQuantity { get; private set; }
 
         public void AddToQuantity(int amountToAdd)
         {
-            quantity += amountToAdd;
+            Quantity += amountToAdd;
         }
     }
 }

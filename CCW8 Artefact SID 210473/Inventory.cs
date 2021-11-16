@@ -14,11 +14,11 @@ namespace Artefact
             while (quantityToAdd > 0)
             {
 
-                if (record.Exists(list => (list.name == item.name) && (list.quantity < item.maxStackQuantity)))
+                if (record.Exists(list => (list.Name == item.Name) && (list.Quantity < item.MaxStackQuantity)))
                 {
-                    Item currentItem = record.First(list => (list.name == item.name) && (list.quantity < item.maxStackQuantity));
+                    Item currentItem = record.First(list => (list.Name == item.Name) && (list.Quantity < item.MaxStackQuantity));
 
-                    int maxStackQuantity = (item.maxStackQuantity - currentItem.quantity);
+                    int maxStackQuantity = (item.MaxStackQuantity - currentItem.Quantity);
 
                     int tempQuantityToAdd = Math.Min(quantityToAdd, maxStackQuantity);
 
@@ -30,11 +30,41 @@ namespace Artefact
                 {                 
                     Item tempItem = item;
 
-                    tempItem.quantity = 0;
+                    tempItem.Quantity = 0;
 
                     record.Add(item);
                 }
 
+            }
+        }
+
+        public void RemoveItem(Item item, int quantityToRemove)
+        {
+            while (quantityToRemove > 0)
+            {
+
+                if (record.Exists(list => (list.Name == item.Name) && (list.Quantity > 0)))
+                {
+                    Item currentItem = record.First(list => (list.Name == item.Name) && (list.Quantity > 0));
+
+                    int maxRemoveQuantity = (item.MaxStackQuantity - currentItem.Quantity);
+
+                    int tempQuantityToRemove = Math.Min(quantityToRemove, currentItem.Quantity);
+
+                    currentItem.AddToQuantity(-tempQuantityToRemove);
+
+                    quantityToRemove -= tempQuantityToRemove;
+
+                    if (currentItem.Quantity < 1)
+                    {
+                        record.Remove(currentItem);
+                    }
+                }
+                else
+                {
+                    throw new Exception("Not valid item to remove or trying to remove too much");
+                }
+ 
             }
         }
     }
