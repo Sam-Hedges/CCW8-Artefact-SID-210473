@@ -34,7 +34,13 @@ namespace Artefact
 
                     tempItem.quantity = 0;
 
-                    record.Add(item);
+                    if (quantityToAdd <= item.maxStackQuantity) 
+                    { 
+                        tempItem.AddToQuantity(quantityToAdd);
+                        quantityToAdd = 0;
+                    }
+
+                    record.Add(tempItem);
                 }
 
             }
