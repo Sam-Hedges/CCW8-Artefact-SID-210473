@@ -44,7 +44,7 @@ namespace Artefact
                 for (int i = 2; i < src + 2; i++)
                 {
                     Item item = stock.record[i - 2];
-                    options[i] = $"{item.Name} \n£{item.Value} x {item.Quantity}\n{item.Description}\n\n";
+                    options[i] = $"{item.name} \n£{item.value} x {item.quantity}\n{item.description}\n\n";
                 }
 
                 int selectedItemIndex = Menu.Display(prompt, options, false);
@@ -75,16 +75,17 @@ namespace Artefact
             while (true)
             {
                 int prc = playerBasket.record.Count;
-                string[] options = new string[prc + 1];
+                string[] options = new string[prc + 2];
                 options[0] = "Return to store\n\n";
+                options[1] = "Reset basket\n\n";
 
                 string prompt = Program.shopPromt + $"Balance: £{Player.balance}\n\n" + $"Basket: £{BasketValue()}\n\n";
 
-                for (int i = 1; i < prc + 1; i++)
+                for (int i = 2; i < prc + 2; i++)
                 {
-                    Item item = playerBasket.record[i - 1];
-                    int itemQuantity = item.Quantity < 1 ? 1 : item.Quantity;
-                    options[i] = $"{item.Name} x {item.Quantity} - £{itemQuantity * item.Value}\n";
+                    Item item = playerBasket.record[i - 2];
+                    int itemQuantity = item.quantity < 1 ? 1 : item.quantity;
+                    options[i] = $"{item.name} x {item.quantity} - £{itemQuantity * item.value}\n";
                 }
 
                 int selectedItemIndex = Menu.Display(prompt, options, false);
@@ -93,8 +94,21 @@ namespace Artefact
                 {
                     case 0:
                         return;
+                    case 1:
+                        for (int i = 0; i < prc; i++)
+                        {
+                            Item item = playerBasket.record[0]; 
+                            // Used Index "0" because lists are dynamic and so the index of each element will change
+                            // every time an item is removed; using "0" just selects the first element of the list 
+                            // each time rather than worrying about removing each element iteratively
+                            
+                            RemoveFromBasket(0, item.quantity < 1 ? 1 : item.quantity); 
+                            // If item for some reason an item has zero quantity then nothing would get removed from the list 
+                            // so 1 is selected instead to insure it's removed from the list
+                        }
+                        return;
                     default:
-                        RemoveFromBasket(selectedItemIndex - 1);
+                        RemoveFromBasket(selectedItemIndex - 2);
                         break;
                 }
             }
@@ -105,27 +119,27 @@ namespace Artefact
             string prompt = Program.shopPromt + $"Balance: £{Player.balance}\n\n" + $"Basket: £{BasketValue()}\n\n";
             foreach (Item item in playerBasket.record)
             {
-                int itemQuantity = item.Quantity < 1 ? 1 : item.Quantity;
-                prompt += $"{item.Name} x {item.Quantity} - £{itemQuantity * item.Value}\n";
+                int itemQuantity = item.quantity < 1 ? 1 : item.quantity;
+                prompt += $"{item.name} x {item.quantity} - £{itemQuantity * item.value}\n";
             }
 
             return prompt;
         }
 
-        private static void AddToBasket(int selectedItemIndex)
+        private static void AddToBasket(int selectedItemIndex, int quantity = 1)
         {
             Item currentItem = stock.record[selectedItemIndex];
 
-            playerBasket.AddItem(currentItem, 1);
-            stock.RemoveItem(currentItem, 1);
+            playerBasket.AddItem(currentItem, quantity);
+            stock.RemoveItem(currentItem, quantity);
         }
 
-        private static void RemoveFromBasket(int selectedItemIndex)
+        private static void RemoveFromBasket(int selectedItemIndex, int quantity = 1)
         {
             Item currentItem = playerBasket.record[selectedItemIndex];
 
-            stock.AddItem(currentItem, 1);
-            playerBasket.RemoveItem(currentItem, 1);      
+            stock.AddItem(currentItem, quantity);
+            playerBasket.RemoveItem(currentItem, quantity);      
         }
 
         private static void InitialiseStock()
@@ -146,7 +160,7 @@ namespace Artefact
                 while (stock.record.Contains(sellableItems[tempItemIndex]));
 
                 Item currentItem = sellableItems[tempItemIndex];
-                int addQuantity = rnd.Next(1, currentItem.MaxStackQuantity);
+                int addQuantity = rnd.Next(1, currentItem.maxStackQuantity);
 
                 stock.AddItem(currentItem, addQuantity);
             }
@@ -158,7 +172,7 @@ namespace Artefact
 
             foreach (Item item in playerBasket.record)
             {
-                tempVal += item.Value * item.Quantity;
+                tempVal += item.value * item.quantity;
             }
 
             return tempVal;
@@ -166,18 +180,30 @@ namespace Artefact
 
         private static void GivePlayerPurchasedItems()
         {
-            foreach(Item item in playerBasket.record)
+            int invSize = playerBasket.record.Count;
+
+            for (int i = 0; i < invSize; i++)
             {
-                Player.inventory.AddItem(item, item.Quantity);
+                Item item = playerBasket.record[0];
+                // Used Index "0" because lists are dynamic and so the index of each element will change
+                // every time an item is removed; using "0" just selects the first element of the list 
+                // each time rather than worrying about removing each element iteratively
+
+                Player.inventory.AddItem(item, item.quantity);
+
+                RemoveFromBasket(0, item.quantity < 1 ? 1 : item.quantity);
+                // If item for some reason an item has zero quantity then nothing would get removed from the list 
+                // so 1 is selected instead to insure it's removed from the list
             }
+            return;
         }
 
         private static bool Checkout()
         {
             if (Player.balance >= BasketValue())
             {
-                stockInitialised = false;
                 GivePlayerPurchasedItems();
+                Player.balance -= BasketValue();
                 return true;
             }
             else

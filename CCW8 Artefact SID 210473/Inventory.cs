@@ -14,15 +14,17 @@ namespace Artefact
             while (quantityToAdd > 0)
             {
 
-                if (record.Exists(list => (list.Name == item.Name) && (list.Quantity < item.MaxStackQuantity)))
+                if (record.Exists(list => (list.name == item.name) && (list.quantity < item.maxStackQuantity)))
                 {
-                    Item currentItem = record.First(list => (list.Name == item.Name) && (list.Quantity < item.MaxStackQuantity));
+                    Item currentItem = record.First(list => (list.name == item.name) && (list.quantity < item.maxStackQuantity));
 
-                    int maxStackQuantity = (item.MaxStackQuantity - currentItem.Quantity);
+                    int toCompleteStackQuantity = (item.maxStackQuantity - currentItem.quantity);
 
-                    int tempQuantityToAdd = Math.Min(quantityToAdd, maxStackQuantity);
+                    int tempQuantityToAdd = Math.Min(quantityToAdd, toCompleteStackQuantity);
 
-                    currentItem.AddToQuantity(tempQuantityToAdd);
+                    int currentItemIndex = record.IndexOf(currentItem);
+
+                    record[currentItemIndex].AddToQuantity(tempQuantityToAdd);
 
                     quantityToAdd -= tempQuantityToAdd;
                 }
@@ -30,7 +32,7 @@ namespace Artefact
                 {                 
                     Item tempItem = item;
 
-                    tempItem.Quantity = 0;
+                    tempItem.quantity = 0;
 
                     record.Add(item);
                 }
@@ -43,21 +45,23 @@ namespace Artefact
             while (quantityToRemove > 0)
             {
 
-                if (record.Exists(list => (list.Name == item.Name) && (list.Quantity > 0)))
+                if (record.Exists(list => (list.name == item.name) && (list.quantity > 0)))
                 {
-                    Item currentItem = record.First(list => (list.Name == item.Name) && (list.Quantity > 0));
+                    Item currentItem = record.First(list => (list.name == item.name) && (list.quantity > 0));
 
-                    int maxRemoveQuantity = (item.MaxStackQuantity - currentItem.Quantity);
+                    int maxRemoveQuantity = (item.maxStackQuantity - currentItem.quantity);
 
-                    int tempQuantityToRemove = Math.Min(quantityToRemove, currentItem.Quantity);
+                    int tempQuantityToRemove = Math.Min(quantityToRemove, currentItem.quantity);
 
-                    currentItem.AddToQuantity(-tempQuantityToRemove);
+                    int currentItemIndex = record.IndexOf(currentItem);
+
+                    record[currentItemIndex].AddToQuantity(-tempQuantityToRemove);
 
                     quantityToRemove -= tempQuantityToRemove;
 
-                    if (currentItem.Quantity < 1)
+                    if (record[currentItemIndex].quantity < 1)
                     {
-                        record.Remove(currentItem);
+                        record.Remove(record[currentItemIndex]);
                     }
                 }
                 else
