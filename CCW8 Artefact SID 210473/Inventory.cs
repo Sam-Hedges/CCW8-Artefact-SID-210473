@@ -6,17 +6,16 @@ namespace Artefact
 {
     public class Inventory
     {
-        public readonly List<Item> record = new List<Item>();
+        public List<Item> record = new List<Item>();
 
         public void AddItem(Item item, int quantityToAdd)
         {
 
             while (quantityToAdd > 0)
-            {
-
-                if (record.Exists(list => (list.name == item.name) && (list.quantity < item.maxStackQuantity)))
+            { 
+                if (record.Exists(list => (list.name == item.name) && (list.quantity < list.maxStackQuantity)))
                 {
-                    Item currentItem = record.First(list => (list.name == item.name) && (list.quantity < item.maxStackQuantity));
+                    Item currentItem = record.First(list => (list.name == item.name) && (list.quantity < list.maxStackQuantity));
 
                     int toCompleteStackQuantity = (item.maxStackQuantity - currentItem.quantity);
 
@@ -32,13 +31,8 @@ namespace Artefact
                 {                 
                     Item tempItem = item;
 
-                    tempItem.quantity = 0;
-
-                    if (quantityToAdd <= item.maxStackQuantity) 
-                    { 
-                        tempItem.AddToQuantity(quantityToAdd);
-                        quantityToAdd = 0;
-                    }
+                    tempItem.quantity = quantityToAdd;
+                    quantityToAdd = 0;
 
                     record.Add(tempItem);
                 }

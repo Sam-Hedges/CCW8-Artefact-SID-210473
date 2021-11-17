@@ -20,7 +20,7 @@ namespace Artefact
             new Item("Eggs", "What came first?", 5, 12),
             new Item("Pepper", "A world renowned doctor.", 1, 10),
             new Item("Vinegar", "Stop it! I’m pickle-ish.", 3, 5),
-            new Item("Spices", "Beyond seasonable doubt.", 2, 20),
+            new Item("Spices", "If you wanna be my lover.", 2, 20),
             new Item("Mustard", "Don't inhale in gaseous form.", 4, 1),
             new Item("Ketchup", "In Heinzsight, don't apply to eyes.", 4, 1)
         };
@@ -95,16 +95,12 @@ namespace Artefact
                     case 0:
                         return;
                     case 1:
-                        for (int i = 0; i < prc; i++)
+                        int invSize = playerBasket.record.Count;
+                        for (int i = 0; i < invSize; i++)
                         {
-                            Item item = playerBasket.record[0]; 
-                            // Used Index "0" because lists are dynamic and so the index of each element will change
-                            // every time an item is removed; using "0" just selects the first element of the list 
-                            // each time rather than worrying about removing each element iteratively
-                            
-                            RemoveFromBasket(0, item.quantity < 1 ? 1 : item.quantity); 
-                            // If item for some reason an item has zero quantity then nothing would get removed from the list 
-                            // so 1 is selected instead to insure it's removed from the list
+                            Item item = playerBasket.record[0];
+
+                            RemoveFromBasket(0, item.quantity < 1 ? 1 : item.quantity);
                         }
                         return;
                     default:
@@ -128,10 +124,11 @@ namespace Artefact
 
         private static void AddToBasket(int selectedItemIndex, int quantity = 1)
         {
-            Item currentItem = stock.record[selectedItemIndex];
+            Item currentItem = new Item();
+            currentItem = stock.record[selectedItemIndex];
 
             playerBasket.AddItem(currentItem, quantity);
-            stock.RemoveItem(currentItem, quantity);
+            stock.RemoveItem(stock.record[selectedItemIndex], quantity);
         }
 
         private static void RemoveFromBasket(int selectedItemIndex, int quantity = 1)
@@ -139,7 +136,7 @@ namespace Artefact
             Item currentItem = playerBasket.record[selectedItemIndex];
 
             stock.AddItem(currentItem, quantity);
-            playerBasket.RemoveItem(currentItem, quantity);      
+            playerBasket.RemoveItem(playerBasket.record[selectedItemIndex], quantity);
         }
 
         private static void InitialiseStock()
@@ -184,17 +181,12 @@ namespace Artefact
 
             for (int i = 0; i < invSize; i++)
             {
-                Item item = playerBasket.record[0];
-                // Used Index "0" because lists are dynamic and so the index of each element will change
-                // every time an item is removed; using "0" just selects the first element of the list 
-                // each time rather than worrying about removing each element iteratively
+                Item item = playerBasket.record[i];
 
                 Player.inventory.AddItem(item, item.quantity);
-
-                RemoveFromBasket(0, item.quantity < 1 ? 1 : item.quantity);
-                // If item for some reason an item has zero quantity then nothing would get removed from the list 
-                // so 1 is selected instead to insure it's removed from the list
             }
+
+            playerBasket.record.Clear();
             return;
         }
 
