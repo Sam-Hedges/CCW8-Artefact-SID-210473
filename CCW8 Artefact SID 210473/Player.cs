@@ -11,7 +11,7 @@ namespace Artefact
         
         public static string DisplayInventory()
         {
-            string tempStr = string.Empty;
+            string tempStr = "Player Inventory:\n\n";
 
             foreach(Item item in inventory.record)
             {

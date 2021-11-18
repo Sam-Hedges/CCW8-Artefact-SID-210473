@@ -59,7 +59,7 @@ namespace Artefact
 
                         for (int i = 0; i < invSize; i++)
                         {
-                            Item item = playerBasket.record[i];
+                            Item item = new Item(playerBasket.record[i]);
 
                             stock.AddItem(item, item.quantity);
                         }
@@ -152,8 +152,8 @@ namespace Artefact
                         {
                             Item item = playerBasket.record[0];
 
-                            if (buying) { RemoveFromBasket(stock, playerBasket, 0, item.quantity < 1 ? 1 : item.quantity); }
-                            else { RemoveFromBasket(Player.inventory, playerBasket, 0, item.quantity < 1 ? 1 : item.quantity); }
+                            if (buying) { RemoveFromBasket(stock, playerBasket, 0, item.quantity); }
+                            else { RemoveFromBasket(Player.inventory, playerBasket, 0, item.quantity); }
                         }
                         return;
                     default:
@@ -178,7 +178,7 @@ namespace Artefact
 
         private static void AddToBasket(Inventory addTo, Inventory removeFrom, int selectedItemIndex, int quantity = 1)
         {
-            Item currentItem = new Item(stock.record[selectedItemIndex]);
+            Item currentItem = new Item(removeFrom.record[selectedItemIndex]);
 
             addTo.AddItem(currentItem, quantity);
             removeFrom.RemoveItem(currentItem, quantity);
@@ -186,7 +186,7 @@ namespace Artefact
 
         private static void RemoveFromBasket(Inventory addTo, Inventory removeFrom, int selectedItemIndex, int quantity = 1)
         {
-            Item currentItem = new Item(playerBasket.record[selectedItemIndex]);
+            Item currentItem = new Item(removeFrom.record[selectedItemIndex]);
 
             addTo.AddItem(currentItem, quantity);
             removeFrom.RemoveItem(currentItem, quantity);
@@ -209,7 +209,7 @@ namespace Artefact
                 }
                 while (stock.record.Contains(sellableItems[tempItemIndex]));
 
-                Item currentItem = sellableItems[tempItemIndex];
+                Item currentItem = new Item(sellableItems[tempItemIndex]);
                 int addQuantity = rnd.Next(1, currentItem.maxStackQuantity);
 
                 stock.AddItem(currentItem, addQuantity);

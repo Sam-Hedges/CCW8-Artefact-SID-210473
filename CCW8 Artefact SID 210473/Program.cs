@@ -56,7 +56,7 @@ namespace Artefact
                 switch (selectedIndex)
                 {
                     case 0:
-                        StartShopping();
+                        ShopOptions();
                         break;
                     case 1:
                         DisplayPlayerStats();
@@ -70,12 +70,12 @@ namespace Artefact
         static void DisplayPlayerStats()
         {
             Console.Clear();
-            Utils.WriteLineAdvanced($"Balance: {Player.balance}\n\n", true, false);
+            Utils.WriteLineAdvanced($"\nBalance: {Player.balance}\n\n", true, false);
             Utils.WriteLineAdvanced(Player.DisplayInventory(), true, false);
             Console.ReadLine();
         }
 
-        static void StartShopping()
+        static void ShopOptions()
         {
             string prompt = shopPromt;
             string[] options = { "Buy", "Sell", "Back" };

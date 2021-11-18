@@ -4,10 +4,18 @@ using System.Linq;
 
 namespace Artefact
 {
+    /// <summary>
+    /// Represents an inventory that can store groups of Items 
+    /// </summary>
     public class Inventory
     {
         public List<Item> record = new List<Item>();
 
+        /// <summary>
+        /// Adds "<c>quantityToAdd</c>" amount of "<c>item</c>" to the Inventories' list
+        /// </summary>
+        /// <param name="item">The item to be added to the inventory</param>
+        /// <param name="quantityToAdd">The quantity of items to be added to the inventory</param>
         public void AddItem(Item item, int quantityToAdd)
         {
 
@@ -38,6 +46,11 @@ namespace Artefact
             }
         }
 
+        /// <summary>
+        /// Removes "<c>quantityToRemove</c>" amount of "<c>item</c>" from the Inventories' list
+        /// </summary>
+        /// <param name="item">The item to be removed from the inventory</param>
+        /// <param name="quantityToRemove">The quantity of items to be removed from the inventory</param>
         public void RemoveItem(Item item, int quantityToRemove)
         {
             while (quantityToRemove > 0)
@@ -51,20 +64,19 @@ namespace Artefact
 
                     int tempQuantityToRemove = Math.Min(quantityToRemove, currentItem.quantity);
 
-                    int currentItemIndex = record.IndexOf(currentItem);
-
-                    record[currentItemIndex].AddToQuantity(-tempQuantityToRemove);
+                    currentItem.AddToQuantity(-tempQuantityToRemove);
 
                     quantityToRemove -= tempQuantityToRemove;
 
-                    if (record[currentItemIndex].quantity < 1)
+                    if (currentItem.quantity < 1)
                     {
-                        record.Remove(record[currentItemIndex]);
+                        record.Remove(currentItem);
                     }
                 }
                 else
                 {
-                    throw new Exception("Not valid item to remove or trying to remove too much");
+                    //throw new Exception("Not valid item to remove or trying to remove too much");
+                    quantityToRemove = 0;
                 }
  
             }
