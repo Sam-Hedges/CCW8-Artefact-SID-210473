@@ -75,8 +75,8 @@ namespace Artefact
                 }
                 else
                 {
-                    //throw new Exception("Not valid item to remove or trying to remove too much");
-                    quantityToRemove = 0;
+                    throw new Exception("Not valid item to remove or trying to remove too much");
+                    //quantityToRemove = 0;
                 }
  
             }

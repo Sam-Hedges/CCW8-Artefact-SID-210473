@@ -55,17 +55,7 @@ namespace Artefact
                     case 0:
                         Player.balance += (float)Math.Round(BasketValue() * 0.9f, 2);
 
-                        int invSize = playerBasket.record.Count;
-
-                        for (int i = 0; i < invSize; i++)
-                        {
-                            Item item = new Item(playerBasket.record[i]);
-
-                            stock.AddItem(item, item.quantity);
-                        }
-
-                        playerBasket.record.Clear();
-    
+                        CheckoutItems(playerBasket, stock);
                         return;
                     case 1:
                         BrowseBasket(false);
@@ -88,7 +78,7 @@ namespace Artefact
                 options[0] = "Checkout\n\n";
                 options[1] = "Edit Basket\n\n";
 
-                string prompt = PopulateBasketDisplay();          
+                string prompt = Program.shopPromt + $"Balance: £{Player.balance}\n\n" + $"Basket: £{BasketValue()}\n\n" + PopulateBasketDisplay();          
 
                 for (int i = 2; i < src + 2; i++)
                 {
@@ -166,7 +156,7 @@ namespace Artefact
 
         private static string PopulateBasketDisplay()
         {
-            string prompt = Program.shopPromt + $"Balance: £{Player.balance}\n\n" + $"Basket: £{BasketValue()}\n\n";
+            string prompt = string.Empty;
             foreach (Item item in playerBasket.record)
             {
                 int itemQuantity = item.quantity < 1 ? 1 : item.quantity;
@@ -192,14 +182,17 @@ namespace Artefact
             removeFrom.RemoveItem(currentItem, quantity);
         }
 
+        /// <summary>
+        /// Fills the Stock Inventory of the Shop randomly with Items from the sellableItems List
+        /// </summary>
         private static void InitialiseStock()
         {
-            stockInitialised = true;
+            stockInitialised = true; // Marks the shops' stock as now being initialized this method isn't repeated
 
-            Random rnd = new Random();
-            int stockAmount = rnd.Next(5, 10);
+            Random rnd = new Random(); // New random class used to generate randoms values for stock initialization
+            int stockAmount = rnd.Next(5, 10); // Number of unique Items to be added to the stock
 
-            for (int i = 0; i <= stockAmount; i++)
+            for (int i = 0; i <= stockAmount; i++) // Iterates stockAmount number of times
             {
                 int tempItemIndex;
 
@@ -207,15 +200,19 @@ namespace Artefact
                 {
                     tempItemIndex = rnd.Next(0, sellableItems.Count);
                 }
-                while (stock.record.Contains(sellableItems[tempItemIndex]));
+                while (stock.record.Contains(sellableItems[tempItemIndex])); // Ensures only onr of each item is added to the stock
 
-                Item currentItem = new Item(sellableItems[tempItemIndex]);
-                int addQuantity = rnd.Next(1, currentItem.maxStackQuantity);
+                Item currentItem = new Item(sellableItems[tempItemIndex]); // Makes a new copy of selected item
+                int addQuantity = rnd.Next(1, currentItem.maxStackQuantity); // Generates a random quantity for the previous item
 
-                stock.AddItem(currentItem, addQuantity);
+                stock.AddItem(currentItem, addQuantity); // The item gets added to the Stock Inventory
             }
         }
 
+        /// <summary>
+        /// Works out the total value of the playerBasket Inventory
+        /// </summary>
+        /// <returns>Total value of playerBasket Inventory</returns>
         private static float BasketValue()
         {
             float tempVal = 0;
@@ -228,27 +225,34 @@ namespace Artefact
             return tempVal;
         }
 
-        private static void GivePlayerPurchasedItems()
+        /// <summary>
+        /// Removes all items from one inventory and adds them to another
+        /// </summary>
+        private static void CheckoutItems(Inventory removeFrom, Inventory addTo)
         {
-            int invSize = playerBasket.record.Count;
+            int invSize = removeFrom.record.Count;
 
             for (int i = 0; i < invSize; i++)
             {
-                Item item = playerBasket.record[i];
+                Item item = new Item(removeFrom.record[i]);
 
-                Player.inventory.AddItem(item, item.quantity);
+                addTo.AddItem(item, item.quantity);
             }
 
-            playerBasket.record.Clear();
+            removeFrom.record.Clear(); // Clears target Inventory of items
             return;
         }
 
+        /// <summary>
+        /// Used when purchasing items to checkout based on whether the player can afford their basket
+        /// </summary>
+        /// <returns></returns>
         private static bool Checkout()
         {
             if (Player.balance >= BasketValue())
             {
                 Player.balance -= BasketValue();
-                GivePlayerPurchasedItems();
+                CheckoutItems(playerBasket, Player.inventory);
                 return true;
             }
             else
