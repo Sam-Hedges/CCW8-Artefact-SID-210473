@@ -28,6 +28,55 @@ namespace Artefact
         public static Inventory playerBasket = new Inventory();
         private static bool stockInitialised = false;
 
+        public static void BrowseSale()
+        {
+            while (true)
+            {
+                int pirc = Player.inventory.record.Count;
+                string[] options = new string[pirc + 2];
+                options[0] = "Checkout\n\n";
+                options[1] = "Edit Basket\n\n";
+
+                string prompt = Program.shopPromt + $"Balance: £{Player.balance}\n\n" + $"Sale Basket: +£{(float)Math.Round(BasketValue() * 0.9f, 2)}\n\n";
+
+                for (int i = 2; i < pirc + 2; i++)
+                {
+                    Item item = Player.inventory.record[i - 2];
+                    int itemQuantity = item.quantity < 1 ? 1 : item.quantity;
+                    float price = itemQuantity * item.value;
+                    float resalePrice = (float)Math.Round(price * 0.9f, 2);
+                    options[i] = $"{item.name} x {item.quantity}\nRetail Price: £{price}\nResale Price: £{resalePrice}\n\n";
+                }
+
+                int selectedItemIndex = Menu.Display(prompt, options, false);
+
+                switch (selectedItemIndex)
+                {
+                    case 0:
+                        Player.balance += (float)Math.Round(BasketValue() * 0.9f, 2);
+
+                        int invSize = playerBasket.record.Count;
+
+                        for (int i = 0; i < invSize; i++)
+                        {
+                            Item item = playerBasket.record[i];
+
+                            stock.AddItem(item, item.quantity);
+                        }
+
+                        playerBasket.record.Clear();
+    
+                        return;
+                    case 1:
+                        BrowseBasket(false);
+                        break;
+                    default:
+                        AddToBasket(playerBasket, Player.inventory, selectedItemIndex - 2);
+                        break;
+                }
+            }
+        }
+
         public static void BrowseShop()
         {
             if (!stockInitialised) { InitialiseStock(); }
@@ -64,13 +113,13 @@ namespace Artefact
                         BrowseBasket();
                         break;
                     default:
-                        AddToBasket(selectedItemIndex - 2);
+                        AddToBasket(playerBasket, stock, selectedItemIndex - 2);
                         break;
                 }
             }
         }
 
-        private static void BrowseBasket()
+        private static void BrowseBasket(bool buying = true)
         {
             while (true)
             {
@@ -85,7 +134,10 @@ namespace Artefact
                 {
                     Item item = playerBasket.record[i - 2];
                     int itemQuantity = item.quantity < 1 ? 1 : item.quantity;
-                    options[i] = $"{item.name} x {item.quantity} - £{itemQuantity * item.value}\n";
+                    float price = itemQuantity * item.value;
+                    float resalePrice = (float)Math.Round(price * 0.9f, 2);
+                    if (buying) { options[i] = $"{item.name} x {item.quantity} - £{price}\n"; }
+                    else { options[i] = $"{item.name} x {item.quantity}\nRetail Price: £{price}\nResale Price: £{resalePrice}\n\n"; }
                 }
 
                 int selectedItemIndex = Menu.Display(prompt, options, false);
@@ -100,11 +152,13 @@ namespace Artefact
                         {
                             Item item = playerBasket.record[0];
 
-                            RemoveFromBasket(0, item.quantity < 1 ? 1 : item.quantity);
+                            if (buying) { RemoveFromBasket(stock, playerBasket, 0, item.quantity < 1 ? 1 : item.quantity); }
+                            else { RemoveFromBasket(Player.inventory, playerBasket, 0, item.quantity < 1 ? 1 : item.quantity); }
                         }
                         return;
                     default:
-                        RemoveFromBasket(selectedItemIndex - 2);
+                        if (buying) { RemoveFromBasket(stock, playerBasket, selectedItemIndex - 2); }
+                        else { RemoveFromBasket(Player.inventory, playerBasket, selectedItemIndex - 2); }
                         break;
                 }
             }
@@ -122,21 +176,20 @@ namespace Artefact
             return prompt;
         }
 
-        private static void AddToBasket(int selectedItemIndex, int quantity = 1)
+        private static void AddToBasket(Inventory addTo, Inventory removeFrom, int selectedItemIndex, int quantity = 1)
         {
-            Item currentItem = new Item();
-            currentItem = stock.record[selectedItemIndex];
+            Item currentItem = new Item(stock.record[selectedItemIndex]);
 
-            playerBasket.AddItem(currentItem, quantity);
-            stock.RemoveItem(stock.record[selectedItemIndex], quantity);
+            addTo.AddItem(currentItem, quantity);
+            removeFrom.RemoveItem(currentItem, quantity);
         }
 
-        private static void RemoveFromBasket(int selectedItemIndex, int quantity = 1)
+        private static void RemoveFromBasket(Inventory addTo, Inventory removeFrom, int selectedItemIndex, int quantity = 1)
         {
-            Item currentItem = playerBasket.record[selectedItemIndex];
+            Item currentItem = new Item(playerBasket.record[selectedItemIndex]);
 
-            stock.AddItem(currentItem, quantity);
-            playerBasket.RemoveItem(playerBasket.record[selectedItemIndex], quantity);
+            addTo.AddItem(currentItem, quantity);
+            removeFrom.RemoveItem(currentItem, quantity);
         }
 
         private static void InitialiseStock()
@@ -194,8 +247,8 @@ namespace Artefact
         {
             if (Player.balance >= BasketValue())
             {
-                GivePlayerPurchasedItems();
                 Player.balance -= BasketValue();
+                GivePlayerPurchasedItems();
                 return true;
             }
             else

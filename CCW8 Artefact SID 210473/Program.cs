@@ -70,6 +70,7 @@ namespace Artefact
         static void DisplayPlayerStats()
         {
             Console.Clear();
+            Utils.WriteLineAdvanced($"Balance: {Player.balance}\n\n", true, false);
             Utils.WriteLineAdvanced(Player.DisplayInventory(), true, false);
             Console.ReadLine();
         }
@@ -86,6 +87,7 @@ namespace Artefact
                     Shop.BrowseShop();
                     break;
                 case 1:
+                    Shop.BrowseSale();
                     break;
                 case 2:
                     break;

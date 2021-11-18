@@ -15,13 +15,13 @@ namespace Artefact
             this.maxStackQuantity = maxStackQuantity;
         }
 
-        public Item()
+        public Item(Item item)
         {
-            name = string.Empty;
-            description = string.Empty;
-            value = 0;
-            quantity = 0;
-            maxStackQuantity = 1;
+            name = item.name;
+            description = item.description;
+            value = item.value;
+            quantity = item.quantity;
+            maxStackQuantity = item.maxStackQuantity;
         }
 
         public string name;

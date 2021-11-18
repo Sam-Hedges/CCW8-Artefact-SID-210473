@@ -21,15 +21,13 @@ namespace Artefact
 
                     int tempQuantityToAdd = Math.Min(quantityToAdd, toCompleteStackQuantity);
 
-                    int currentItemIndex = record.IndexOf(currentItem);
-
-                    record[currentItemIndex].AddToQuantity(tempQuantityToAdd);
+                    currentItem.AddToQuantity(tempQuantityToAdd);
 
                     quantityToAdd -= tempQuantityToAdd;
                 }
                 else
                 {                 
-                    Item tempItem = item;
+                    Item tempItem = new Item(item);
 
                     tempItem.quantity = quantityToAdd;
                     quantityToAdd = 0;
@@ -45,9 +43,9 @@ namespace Artefact
             while (quantityToRemove > 0)
             {
 
-                if (record.Exists(list => (list.name == item.name) && (list.quantity > 0)))
+                if (record.Exists(list => (list.name == item.name) && (list.quantity >= 0)))
                 {
-                    Item currentItem = record.First(list => (list.name == item.name) && (list.quantity > 0));
+                    Item currentItem = record.First(list => (list.name == item.name) && (list.quantity >= 0));
 
                     int maxRemoveQuantity = (item.maxStackQuantity - currentItem.quantity);
 
